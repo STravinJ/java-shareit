@@ -32,11 +32,11 @@ public class Validator {
 
     public static void userIdValidation(Long userID, Map<Long, User> users) {
 
-        if(!(users.containsKey(userID))) {
+        if (!(users.containsKey(userID))) {
             String errorMsg = String.format("Отсутствует пользователь с id=%s", userID);
             throw new DataNotFoundException(errorMsg);
         }
-        if(userID < 0) {
+        if (userID < 0) {
             String errorMsg = String.format("Некорректный id=%s", userID);
             throw new ValidationException(errorMsg);
         }
@@ -45,7 +45,7 @@ public class Validator {
 
     public static void userIdValidation(Long userID) {
 
-        if(userID < 0) {
+        if (userID < 0) {
             String errorMsg = String.format("Некорректный id=%s", userID);
             throw new DataNotFoundException(errorMsg);
         }

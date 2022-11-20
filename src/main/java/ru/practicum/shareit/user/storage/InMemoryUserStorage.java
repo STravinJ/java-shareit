@@ -56,7 +56,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Boolean existsByEmail(String email) {
 
-        for (User user : users.values()){
+        for (User user : users.values()) {
             if (user.getEmail().equals(email)) {
                 return true;
             }

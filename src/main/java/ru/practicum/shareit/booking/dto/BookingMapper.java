@@ -21,6 +21,7 @@ public class BookingMapper {
                 booking.getStatus()
         );
     }
+
     public static Booking toBooking(BookingRequestDto dto, Item item, User user) {
         Booking booking = new Booking();
         booking.setStart(dto.getStart());
