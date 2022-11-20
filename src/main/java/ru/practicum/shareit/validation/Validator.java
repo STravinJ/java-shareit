@@ -22,7 +22,7 @@ public class Validator {
         }
 
         for (User userV : users.values()) {
-            if (!user.getId().equals(userV.getId())
+            if ((user.getId() == null || !user.getId().equals(userV.getId()))
                     && userV.getEmail().equals(user.getEmail())) {
                 throw new DataNotFoundException("Пользователь с такой почтой уже существует.");
             }
