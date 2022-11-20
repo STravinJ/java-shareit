@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
@@ -68,7 +67,7 @@ public class InMemoryItemStorage implements ItemStorage {
         for (Item item : items.values()) {
             if (item.getName().toLowerCase().contains(text.toLowerCase())) {
                 findedItems.add(item);
-            };
+            }
         }
 
         return findedItems;
@@ -83,7 +82,7 @@ public class InMemoryItemStorage implements ItemStorage {
         for (Item item : items.values()) {
             if (item.getOwner().getId().equals(userId)) {
                 findedItems.add(item);
-            };
+            }
         }
 
         return findedItems;
@@ -98,7 +97,7 @@ public class InMemoryItemStorage implements ItemStorage {
         for (Item item : items.values()) {
             if (item.getRequest().getId().equals(requestId)) {
                 findedItems.add(item);
-            };
+            }
         }
 
         return findedItems;

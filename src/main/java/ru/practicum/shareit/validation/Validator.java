@@ -3,8 +3,6 @@ package ru.practicum.shareit.validation;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.model.User;
-
-import java.time.LocalDate;
 import java.util.Map;
 
 public class Validator {

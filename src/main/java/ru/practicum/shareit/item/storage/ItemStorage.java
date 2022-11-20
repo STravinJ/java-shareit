@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.storage;
 
-import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;

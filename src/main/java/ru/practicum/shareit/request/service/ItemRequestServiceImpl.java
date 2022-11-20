@@ -1,8 +1,8 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.request.dto.ItemRequestInDto;
@@ -10,13 +10,11 @@ import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestOutDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestStorage;
-
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

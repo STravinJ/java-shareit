@@ -25,7 +25,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
-    private final BookingStorage bookingStorage;
     private final ItemRequestStorage itemRequestStorage;
 
     @Override
