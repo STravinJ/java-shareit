@@ -6,16 +6,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.BookingStateException;
 
 import java.util.List;
 
-@RestController
-@Slf4j
 @RequiredArgsConstructor
-@Validated
+@RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
