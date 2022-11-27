@@ -2,9 +2,13 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.Nullable;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
+
+import java.util.List;
 
 @UtilityClass
 public class ItemMapper {
@@ -28,6 +32,18 @@ public class ItemMapper {
                 user,
                 request
         );
+    }
+
+    public static ItemResponseDto toItemResponseDto(Item item, Booking lastBooking, Booking nextBooking,
+                                                    List<CommentDto> comments) {
+        return new ItemResponseDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                lastBooking != null ? BookingMapper.toBookingItemDto(lastBooking) : null,
+                nextBooking != null ? BookingMapper.toBookingItemDto(nextBooking) : null,
+                comments);
     }
 
 }
