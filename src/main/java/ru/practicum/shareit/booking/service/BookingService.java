@@ -1,9 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
+import org.hibernate.exception.ConstraintViolationException;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import org.hibernate.exception.ConstraintViolationException;
-import ru.practicum.shareit.booking.model.BookingState;
 
 import java.util.List;
 
