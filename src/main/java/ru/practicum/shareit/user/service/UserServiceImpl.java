@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.validation.Validator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto add(UserDto user) {
-        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(user)));
+    public UserDto add(UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
+        Validator.userValidation(user);
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
