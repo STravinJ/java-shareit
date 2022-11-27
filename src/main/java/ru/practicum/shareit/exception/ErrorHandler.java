@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.validation.ConstraintViolationException;
 
@@ -45,6 +46,14 @@ public class ErrorHandler {
         log.info("Throwable. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>("Произошла непредвиденная ошибка.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingStateException(final BookingStateException e) {
+        log.info("BookingStateException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ErrorResponse(e.getMessage());
     }
 
 }

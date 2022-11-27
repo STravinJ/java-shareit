@@ -1,15 +1,21 @@
 package ru.practicum.shareit.booking;
 
+import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.BookingStateException;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
+@Slf4j
+@RequiredArgsConstructor
+@Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
@@ -38,24 +44,14 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> getByUser(@RequestHeader(HEADER_USER_ID) long userId,
-                                              @RequestParam(value = "state", defaultValue = "ALL") String state,
-                                              @RequestParam(name = "from", defaultValue = "0")
-                                              Integer from,
-                                              @RequestParam(name = "size", defaultValue = "10")
-                                              Integer size) {
-        int page = from / size;
+                                              @RequestParam(value = "state", defaultValue = "ALL") String state) {
 
         return bookingService.getByUser(userId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getByOwner(@RequestHeader(HEADER_USER_ID) long userId,
-                                               @RequestParam(value = "state", defaultValue = "ALL") String state,
-                                               @RequestParam(name = "from", defaultValue = "0")
-                                               Integer from,
-                                               @RequestParam(name = "size", defaultValue = "10")
-                                               Integer size) {
-        int page = from / size;
+                                               @RequestParam(value = "state", defaultValue = "ALL") String state) {
 
         return bookingService.getByOwner(userId, state);
     }
