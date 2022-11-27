@@ -6,6 +6,7 @@ import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
@@ -15,18 +16,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public List<UserDto> getAll() {
-        return userStorage.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDto add(UserDto user) {
-        return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(user)));
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(user)));
     }
 
     @Override
@@ -38,18 +39,17 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() != null && !(user.getEmail().trim().isBlank())) {
             oldUser.setEmail(user.getEmail());
         }
-        userStorage.update(oldUser);
-        return UserMapper.toUserDto(oldUser);
+        return UserMapper.toUserDto(userRepository.save(oldUser));
     }
 
     @Override
     public void delete(long userId) {
-        userStorage.deleteById(userId);
+        userRepository.deleteById(userId);
     }
 
     @Override
     public UserDto getById(long userId) {
-        return UserMapper.toUserDto(userStorage.findById(userId).orElseThrow(() ->
+        return UserMapper.toUserDto(userRepository.findById(userId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Пользователь с id = %s не найден!", userId))));
     }
 

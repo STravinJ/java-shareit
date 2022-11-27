@@ -6,25 +6,31 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.BookingStateException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingStorage bookingStorage;
-    private final UserStorage userStorage;
-    private final ItemStorage itemStorage;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public BookingResponseDto add(long userId, BookingRequestDto bookingRequestDto) {
@@ -33,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = checkItem(bookingRequestDto.getItemId());
         checkItemOwner(userId, item);
         checkItemAvailable(item);
-        return BookingMapper.toBookingResponseDto(bookingStorage.save(BookingMapper.toBooking(bookingRequestDto,
+        return BookingMapper.toBookingResponseDto(bookingRepository.save(BookingMapper.toBooking(bookingRequestDto,
                 item, booker)));
     }
 
@@ -47,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         item = booking.getItem();
         checkAccessForApprove(userId, item);
         booking.setStatus(isApproved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
-        return BookingMapper.toBookingResponseDto(bookingStorage.save(booking));
+        return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -91,6 +97,94 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Override
+    public List<BookingResponseDto> getByUser(long userId, String stateIn) {
+        checkUserExist(userId);
+        BookingState state;
+        try {
+            state = BookingState.valueOf(stateIn);
+        } catch (IllegalArgumentException e) {
+            throw new BookingStateException("Unknown state: " + stateIn);
+        }
+        LocalDateTime now = LocalDateTime.now();
+        switch (state) {
+            case CURRENT:
+                return bookingRepository
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, now, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case WAITING:
+                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case REJECTED:
+                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            default:
+                return bookingRepository.findAllByBookerIdOrderByStartDesc(userId)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<BookingResponseDto> getByOwner(long ownerId, String stateIn) {
+        checkUserExist(ownerId);
+        BookingState state;
+        try {
+            state = BookingState.valueOf(stateIn);
+        } catch (IllegalArgumentException e) {
+            throw new BookingStateException("Unknown state: " + stateIn);
+        }
+        LocalDateTime now = LocalDateTime.now();
+        switch (state) {
+            case CURRENT:
+                return bookingRepository.findAllCurrentByItemsOwnerId(ownerId, now, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.findAllPastByItemsOwnerId(ownerId, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.findAllFutureByItemsOwnerId(ownerId, now)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case WAITING:
+                return bookingRepository.findAllStatusByItemsOwnerId(ownerId, BookingStatus.WAITING)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            case REJECTED:
+                return bookingRepository.findAllStatusByItemsOwnerId(ownerId, BookingStatus.REJECTED)
+                        .stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+            default:
+                return bookingRepository.findAllByItemsOwnerId(ownerId).stream()
+                        .map(BookingMapper::toBookingResponseDto)
+                        .collect(Collectors.toList());
+        }
+    }
+
     private void checkBookingDate(BookingRequestDto bookingRequestDto) {
         if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
             throw new ValidationException("Дата окончания не может быть раньше даты старта!");
@@ -104,22 +198,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public User checkUser(long userId) {
-        return userStorage.findById(userId).orElseThrow(() ->
+        return userRepository.findById(userId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Пользователь с id = %s не найден!", userId)));
     }
 
     public Item checkItem(long itemId) {
-        return itemStorage.findById(itemId).orElseThrow(() ->
+        return itemRepository.findById(itemId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Вещь с id = %s не найдена!", itemId)));
     }
 
     public Booking checkBooking(long bookingId) {
-        return bookingStorage.findById(bookingId).orElseThrow(() ->
+        return bookingRepository.findById(bookingId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Бронирование с id = %s не найдено!", bookingId)));
     }
 
     public void checkUserExist(long userId) {
-        if (!userStorage.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException(String.format("Пользователь с id = %s не найден!", userId));
         }
     }
