@@ -28,8 +28,50 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final EndBeforeTodayException e) {
+        log.info("EndBeforeTodayException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final EndBeforeStartException e) {
+        log.info("EndBeforeStartException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final StartBeforeTodayException e) {
+        log.info("StartBeforeTodayException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<String> handleEntityNotFoundException(final EntityNotFoundException e) {
         log.info("EntityNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final ItemNotFoundException e) {
+        log.info("ItemNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final UserNotFoundException e) {
+        log.info("UserNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final BookingNotFoundException e) {
+        log.info("BookingNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
