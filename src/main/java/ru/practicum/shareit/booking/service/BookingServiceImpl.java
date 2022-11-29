@@ -9,9 +9,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.BookingStateException;
-import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -184,34 +182,34 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingDate(BookingRequestDto bookingRequestDto) {
         if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new ValidationException("Дата окончания не может быть раньше даты старта!");
+            throw new EndBeforeStartException();
         }
         if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Дата начала не может быть раньше текущей даты!");
+            throw new StartBeforeTodayException();
         }
         if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Дата окончания не может быть раньше текущей даты!");
+            throw new EndBeforeTodayException();
         }
     }
 
     public User checkUser(long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Пользователь с id = %s не найден!", userId)));
+                new UserNotFoundException(userId));
     }
 
     public Item checkItem(long itemId) {
         return itemRepository.findById(itemId).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Вещь с id = %s не найдена!", itemId)));
+                new ItemNotFoundException(itemId));
     }
 
     public Booking checkBooking(long bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Бронирование с id = %s не найдено!", bookingId)));
+                new BookingNotFoundException(bookingId));
     }
 
     public void checkUserExist(long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException(String.format("Пользователь с id = %s не найден!", userId));
+            throw new UserNotFoundException(userId);
         }
     }
 }

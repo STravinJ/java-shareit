@@ -12,46 +12,37 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    //All by Booker ID
+
     List<Booking> findAllByBookerIdOrderByStartDesc(long userId);
 
-    //Current by Booker ID
     List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long userId,
                                                                                  LocalDateTime nowStart,
                                                                                  LocalDateTime nowEnd);
 
-    //Past by Booker ID
     List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long userId, LocalDateTime now);
 
-    //FUTURE by Booker ID
     List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(long userId,
                                                                    LocalDateTime now);
 
-    //Status by Booker ID
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long userId, BookingStatus status);
 
-    //All by item owner ID
     @Query("select b from Booking b where b.item.owner.id = ?1 order by b.start desc")
     List<Booking> findAllByItemsOwnerId(long userId);
 
-    //Current by item owner ID
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.start <= ?2 and b.end >= ?3 order by b.start desc")
     List<Booking> findAllCurrentByItemsOwnerId(long userId,
                                                LocalDateTime nowStart,
                                                LocalDateTime nowEnd);
 
-    //Past by item owner ID
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.end <= ?2 order by b.start desc")
     List<Booking> findAllPastByItemsOwnerId(long userId, LocalDateTime now);
 
-    //FUTURE by item owner ID
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.start >= ?2 order by b.start desc")
     List<Booking> findAllFutureByItemsOwnerId(long userId, LocalDateTime now);
 
-    //Status by item owner ID
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.status = ?2 order by b.start desc")
     List<Booking> findAllStatusByItemsOwnerId(long userId, BookingStatus status);

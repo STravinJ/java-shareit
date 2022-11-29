@@ -15,5 +15,5 @@ public class ItemResponseDto extends ItemDto {
     private Boolean available;
     private BookingItemDto lastBooking;
     private BookingItemDto nextBooking;
-    List<CommentDto> comments;
+    private List<CommentDto> comments;
 }
