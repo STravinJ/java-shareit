@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Validator {
 
-    public static void userValidation(User user, Map<Long, User> users) {
+    public static void userValidation(User user) {
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new ValidationException("Адрес электронной почты не может быть пустым.");
@@ -15,17 +15,6 @@ public class Validator {
 
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("Email должен содержать символ @.");
-        }
-
-        if (user.getId() != null && !users.containsKey(user.getId())) {
-            throw new DataNotFoundException("Не найден пользователь при обновлении.");
-        }
-
-        for (User userV : users.values()) {
-            if ((user.getId() == null || !user.getId().equals(userV.getId()))
-                    && userV.getEmail().equals(user.getEmail())) {
-                throw new DataNotFoundException("Пользователь с такой почтой уже существует.");
-            }
         }
 
     }

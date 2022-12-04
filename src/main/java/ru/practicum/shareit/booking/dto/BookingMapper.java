@@ -33,11 +33,11 @@ public class BookingMapper {
         return booking;
     }
 
-    public static BookingDto toBookingItemDto(Booking booking) {
+    public static BookingItemDto toBookingItemDto(Booking booking) {
         if (isNull(booking)) {
             return null;
         }
-        return new BookingDto(
+        return new BookingItemDto(
                 booking.getId(),
                 booking.getBooker().getId()
         );

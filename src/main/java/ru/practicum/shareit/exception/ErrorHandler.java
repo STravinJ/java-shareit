@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.validation.ConstraintViolationException;
 
@@ -27,8 +28,50 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final EndBeforeTodayException e) {
+        log.info("EndBeforeTodayException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final EndBeforeStartException e) {
+        log.info("EndBeforeStartException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleValidationException(final StartBeforeTodayException e) {
+        log.info("StartBeforeTodayException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<String> handleEntityNotFoundException(final EntityNotFoundException e) {
         log.info("EntityNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final ItemNotFoundException e) {
+        log.info("ItemNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final UserNotFoundException e) {
+        log.info("UserNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleEntityNotFoundException(final BookingNotFoundException e) {
+        log.info("BookingNotFoundException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
@@ -45,6 +88,14 @@ public class ErrorHandler {
         log.info("Throwable. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>("Произошла непредвиденная ошибка.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingStateException(final BookingStateException e) {
+        log.info("BookingStateException. Произошла ошибка {}, статус ошибки {}", e.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ErrorResponse(e.getMessage());
     }
 
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,18 +29,18 @@ class UserServiceImplTest {
     );
 
     @MockBean
-    UserStorage userStorage;
+    UserRepository userRepository;
     UserService userService;
 
     @BeforeEach
     void beforeEach() {
-        userStorage = mock(UserStorage.class);
-        userService = new UserServiceImpl(userStorage);
+        userRepository = mock(UserRepository.class);
+        userService = new UserServiceImpl(userRepository);
     }
 
     @Test
     void getAll() {
-        when(userStorage.findAll())
+        when(userRepository.findAll())
                 .thenReturn(Collections.singletonList(user));
         List<UserDto> userDtos = userService.getAll();
 
@@ -51,7 +51,7 @@ class UserServiceImplTest {
 
     @Test
     void add() {
-        when(userStorage.save(any()))
+        when(userRepository.save(any()))
                 .thenReturn(user);
         UserDto userDto = userService.add(UserMapper.toUserDto(user));
 
@@ -62,9 +62,9 @@ class UserServiceImplTest {
 
     @Test
     void update() {
-        when(userStorage.save(any()))
+        when(userRepository.save(any()))
                 .thenReturn(user);
-        when(userStorage.findById(any()))
+        when(userRepository.findById(any()))
                 .thenReturn(Optional.ofNullable(user));
 
         UserDto userDto = userService.update(UserMapper.toUserDto(user));
@@ -76,9 +76,9 @@ class UserServiceImplTest {
 
     @Test
     void getById() {
-        when(userStorage.save(any()))
+        when(userRepository.save(any()))
                 .thenReturn(user);
-        when(userStorage.findById(any()))
+        when(userRepository.findById(any()))
                 .thenReturn(Optional.ofNullable(user));
 
         UserDto userDto = userService.getById(user.getId());
@@ -90,13 +90,13 @@ class UserServiceImplTest {
 
     @Test
     void getByIdWrongId() {
-        when(userStorage.save(any()))
+        when(userRepository.save(any()))
                 .thenReturn(user);
-        when(userStorage.findById(any()))
+        when(userRepository.findById(any()))
                 .thenReturn(Optional.ofNullable(user));
-        when(userStorage.findAll()).thenReturn(Collections.emptyList());
+        when(userRepository.findAll()).thenReturn(Collections.emptyList());
         userService.delete(user.getId());
-        assertEquals(0, userStorage.findAll().size());
+        assertEquals(0, userRepository.findAll().size());
 
     }
 

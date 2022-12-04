@@ -3,17 +3,18 @@ package ru.practicum.shareit.item.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.storage.ItemRequestStorage;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -29,16 +30,19 @@ class ItemServiceImplTest {
     ItemService itemService;
 
     @Mock
-    ItemStorage itemStorage;
+    ItemRepository itemRepository;
 
     @Mock
-    UserStorage userStorage;
+    UserRepository userRepository;
 
     @Mock
-    BookingStorage bookingStorage;
+    BookingRepository bookingRepository;
 
     @Mock
-    ItemRequestStorage itemRequestStorage;
+    ItemRequestRepository itemRequestRepository;
+
+    @Mock
+    CommentRepository commentRepository;
 
     User user;
     Item item;
@@ -46,11 +50,13 @@ class ItemServiceImplTest {
 
     @BeforeEach
     void beforeEach() {
-        itemStorage = mock(ItemStorage.class);
-        userStorage = mock(UserStorage.class);
-        bookingStorage = mock(BookingStorage.class);
-        itemRequestStorage = mock(ItemRequestStorage.class);
-        itemService = new ItemServiceImpl(itemStorage, userStorage, bookingStorage, itemRequestStorage);
+        itemRepository = mock(ItemRepository.class);
+        userRepository = mock(UserRepository.class);
+        bookingRepository = mock(BookingRepository.class);
+        itemRequestRepository = mock(ItemRequestRepository.class);
+        commentRepository = mock(CommentRepository.class);
+        itemService = new ItemServiceImpl(itemRepository, userRepository, bookingRepository, itemRequestRepository,
+                commentRepository);
         user = new User(1L, "User", "user@email.ru");
         itemRequest = new ItemRequest(1L, "request description", user,
                 LocalDateTime.of(2022, 10, 14, 13, 17, 29));
@@ -60,8 +66,8 @@ class ItemServiceImplTest {
 
     @Test
     void add() {
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemStorage.save(item)).thenReturn(item);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.save(item)).thenReturn(item);
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
         ItemDto itemDto1 = itemService.add(1L, itemDto);
@@ -77,11 +83,11 @@ class ItemServiceImplTest {
     void update() {
         Item updatedItem = new Item(item.getId(), "updateItemName", "updateItemDescription",
                 item.getAvailable(), item.getOwner(), item.getRequest());
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
-        when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
-        when(itemStorage.save(updatedItem)).thenReturn(updatedItem);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(itemRepository.save(updatedItem)).thenReturn(updatedItem);
         ItemDto itemDto = ItemMapper.toItemDto(updatedItem);
         ItemDto itemDto1 = itemService.update(1, itemDto);
         assertNotNull(itemDto1);
@@ -95,22 +101,22 @@ class ItemServiceImplTest {
 
     @Test
     void findById() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
-        when(itemStorage.findById(anyLong())).thenReturn(Optional.of(item));
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
     }
 
     @Test
     void getAllItemsByOwner() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
     }
 
     @Test
     void addItemWithWrongUserId() {
-        when(userStorage.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
         EntityNotFoundException exception = assertThrows(
@@ -122,7 +128,7 @@ class ItemServiceImplTest {
 
     @Test
     void updateItemWithWrongUserId() {
-        when(userStorage.existsById(anyLong())).thenReturn(false);
+        when(userRepository.existsById(anyLong())).thenReturn(false);
         ItemDto itemDto = ItemMapper.toItemDto(item);
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -133,10 +139,10 @@ class ItemServiceImplTest {
 
     @Test
     void updateItemWithWrongItemId() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
-        when(itemStorage.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
         ItemDto itemDto = ItemMapper.toItemDto(item);
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -147,10 +153,10 @@ class ItemServiceImplTest {
 
     @Test
     void findItemWithWrongId() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
-        when(itemStorage.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -161,9 +167,9 @@ class ItemServiceImplTest {
 
     @Test
     void addItemWithWrongItemName() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
         itemDto.setName("");
@@ -176,9 +182,9 @@ class ItemServiceImplTest {
 
     @Test
     void addItemWithWrongItemDescription() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
         itemDto.setDescription("");
@@ -191,9 +197,9 @@ class ItemServiceImplTest {
 
     @Test
     void addItemWithNullAvailable() {
-        when(userStorage.existsById(anyLong())).thenReturn(true);
-        when(userStorage.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userStorage.save(any())).thenReturn(user);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(user);
 
         ItemDto itemDto = ItemMapper.toItemDto(item);
         itemDto.setAvailable(null);
