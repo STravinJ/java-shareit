@@ -86,6 +86,62 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void addBookingWithWrongItemId() {
+
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.existsById(anyLong())).thenReturn(true);
+
+        BookingRequestDto bookingRequestDto = new BookingRequestDto(55L, booking.getStart(),
+                booking.getEnd());
+        ItemNotFoundException exception = assertThrows(
+                ItemNotFoundException.class,
+                () -> bookingService.add(user2.getId(), bookingRequestDto));
+
+        assertEquals("Вещь с id = 55 не найдена!", exception.getMessage());
+    }
+
+    @Test
+    void addBookingWithWrongUserId() {
+
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        BookingRequestDto bookingRequestDto = new BookingRequestDto(item.getId(), booking.getStart(),
+                booking.getEnd());
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                () -> bookingService.add(55L, bookingRequestDto));
+
+        assertEquals("Пользователь с id = 55 не найден!", exception.getMessage());
+    }
+
+    @Test
+    void addWhenEndIsBeforeToday() {
+
+        booking.setEnd(booking.getEnd().minusDays(100));
+        BookingRequestDto bookingRequestDto = new BookingRequestDto(item.getId(), booking.getStart(),
+                booking.getEnd());
+        EndBeforeTodayException exception = assertThrows(
+                EndBeforeTodayException.class,
+                () -> bookingService.add(user.getId(), bookingRequestDto));
+
+        assertEquals("Дата окончания не может быть раньше текущей даты!", exception.getMessage());
+    }
+
+    @Test
+    void addWhenStartIsBeforeToday() {
+
+        booking.setStart(booking.getStart().minusDays(100));
+        BookingRequestDto bookingRequestDto = new BookingRequestDto(item.getId(), booking.getStart(),
+                booking.getEnd());
+        StartBeforeTodayException exception = assertThrows(
+                StartBeforeTodayException.class,
+                () -> bookingService.add(user.getId(), bookingRequestDto));
+
+        assertEquals("Дата начала не может быть раньше текущей даты!", exception.getMessage());
+    }
+
+    @Test
     void approve() {
 
         when(userRepository.existsById(anyLong())).thenReturn(true);

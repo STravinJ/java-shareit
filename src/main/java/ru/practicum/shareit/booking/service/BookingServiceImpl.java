@@ -31,8 +31,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto add(long userId, BookingRequestDto bookingRequestDto) {
         checkBookingDate(bookingRequestDto);
-        User booker = checkUser(userId);
         Item item = checkItem(bookingRequestDto.getItemId());
+        User booker = checkUser(userId);
         checkItemOwner(userId, item);
         checkItemAvailable(item);
         return BookingMapper.toBookingResponseDto(bookingRepository.save(BookingMapper.toBooking(bookingRequestDto,
@@ -184,14 +184,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkBookingDate(BookingRequestDto bookingRequestDto) {
-        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new EndBeforeStartException();
+        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
+            throw new EndBeforeTodayException();
         }
         if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
             throw new StartBeforeTodayException();
         }
-        if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new EndBeforeTodayException();
+        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
+            throw new EndBeforeStartException();
         }
     }
 
