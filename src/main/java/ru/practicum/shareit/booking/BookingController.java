@@ -1,10 +1,12 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.validation.Validator;
 
 import java.util.List;
 
@@ -38,16 +40,26 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> getByUser(@RequestHeader(HEADER_USER_ID) long userId,
-                                              @RequestParam(value = "state", defaultValue = "ALL") String state) {
-
-        return bookingService.getByUser(userId, state);
+                                              @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                              @RequestParam(name = "from", defaultValue = "0")
+                                              Integer from,
+                                              @RequestParam(name = "size", defaultValue = "10")
+                                              Integer size) {
+        Validator.fromPageValidation(from);
+        int page = from / size;
+        return bookingService.getByUser(userId, state, PageRequest.of(page, size));
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getByOwner(@RequestHeader(HEADER_USER_ID) long userId,
-                                               @RequestParam(value = "state", defaultValue = "ALL") String state) {
-
-        return bookingService.getByOwner(userId, state);
+                                               @RequestParam(value = "state", defaultValue = "ALL") String state,
+                                               @RequestParam(name = "from", defaultValue = "0")
+                                               Integer from,
+                                               @RequestParam(name = "size", defaultValue = "10")
+                                               Integer size) {
+        Validator.fromPageValidation(from);
+        int page = from / size;
+        return bookingService.getByOwner(userId, state, PageRequest.of(page, size));
     }
 
 }

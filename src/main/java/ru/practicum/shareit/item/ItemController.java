@@ -1,11 +1,13 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.validation.Validator;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,16 +42,28 @@ public class ItemController {
     }
 
     @GetMapping()
-    public List<ItemResponseDto> getAll(@RequestHeader(HEADER_USER_ID) long userId) {
-        return itemService.getAllItemsByOwner(userId);
+    public List<ItemResponseDto> getAll(@RequestHeader(HEADER_USER_ID) long userId,
+                                        @RequestParam(name = "from", defaultValue = "0")
+                                        Integer from,
+                                        @RequestParam(name = "size", defaultValue = "10")
+                                        Integer size) {
+        Validator.fromPageValidation(from);
+        int page = from / size;
+        return itemService.getAllItemsByOwner(userId, PageRequest.of(page, size));
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemsByText(@RequestParam("text") String text) {
+    public List<ItemDto> searchItemsByText(@RequestParam("text") String text,
+                                           @RequestParam(name = "from", defaultValue = "0")
+                                           Integer from,
+                                           @RequestParam(name = "size", defaultValue = "10")
+                                           Integer size) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemService.searchItemsByText(text);
+        Validator.fromPageValidation(from);
+        int page = from / size;
+        return itemService.searchItemsByText(text, PageRequest.of(page, size));
     }
 
     @PostMapping("{itemId}/comment")

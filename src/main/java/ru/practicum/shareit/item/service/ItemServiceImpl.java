@@ -16,6 +16,7 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +72,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponseDto> getAllItemsByOwner(long userId) {
+    public List<ItemResponseDto> getAllItemsByOwner(long userId, Pageable pageRequest) {
         checkUser(userId);
-        List<Item> itemList = itemRepository.findItemsByOwnerIdOrderById(userId);
+        List<Item> itemList = itemRepository.findItemsByOwnerIdOrderById(userId, pageRequest);
         List<ItemResponseDto> itemDtoResponseList = new ArrayList<>();
         for (Item item : itemList) {
             ItemResponseDto itemResponseDto = getItemResponseDto(item, userId);
@@ -104,8 +105,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemsByText(String text) {
-        return itemRepository.searchItemsByText(text).stream()
+    public List<ItemDto> searchItemsByText(String text, Pageable pageRequest) {
+        return itemRepository.searchItemsByText(text, pageRequest).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

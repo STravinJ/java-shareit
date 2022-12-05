@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.request.dto.ItemRequestInDto;
 import ru.practicum.shareit.request.dto.ItemRequestOutDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.validation.Validator;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class ItemRequestController {
                                           Integer from,
                                           @RequestParam(name = "size", defaultValue = "10")
                                           Integer size) {
+        Validator.fromPageValidation(from);
         int page = from / size;
         return itemRequestService.getAll(userId, PageRequest.of(page, size));
     }
