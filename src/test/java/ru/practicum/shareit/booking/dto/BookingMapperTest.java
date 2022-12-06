@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BookingMapperTest {
 
-    User user;
-    User user2;
-    Item item;
-    Booking booking;
+    private User user;
+    private User user2;
+    private Item item;
+    private Booking booking;
 
     @BeforeEach
     void beforeEach() {

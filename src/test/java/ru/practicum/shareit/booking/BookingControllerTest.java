@@ -33,16 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookingControllerTest {
 
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
     private MockMvc mvc;
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
-    BookingResponseDto bookingResponseDto;
+    private BookingResponseDto bookingResponseDto;
 
-    User user;
-    Item item;
+    private User user;
+    private Item item;
 
     @BeforeEach
     void beforeEach() {

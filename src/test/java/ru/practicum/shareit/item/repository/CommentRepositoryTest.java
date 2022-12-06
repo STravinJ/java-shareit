@@ -20,14 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CommentRepositoryTest {
 
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    CommentRepository commentRepository;
-    Item item1;
-    User user1;
-    Comment comment;
+    private CommentRepository commentRepository;
+    private Item item1;
+    private User user1;
+    private Comment comment;
 
     @BeforeEach
     void beforeEach() {

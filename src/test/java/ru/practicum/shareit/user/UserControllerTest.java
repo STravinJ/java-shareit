@@ -36,13 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     @MockBean
-    UserService userService;
+    private UserService userService;
     @Autowired
     private MockMvc mvc;
     @Autowired
     ObjectMapper mapper;
 
-    UserDto userDto;
+    private UserDto userDto;
 
     @BeforeEach
     void beforeEach() {

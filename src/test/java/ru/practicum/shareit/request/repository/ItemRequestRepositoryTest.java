@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemRequestRepositoryTest {
 
     @Autowired
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    ItemRequest request;
-    User user1;
+    private ItemRequest request;
+    private User user1;
 
     @BeforeEach
     void beforeEach() {

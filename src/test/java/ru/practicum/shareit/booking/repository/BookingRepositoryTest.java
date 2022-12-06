@@ -23,15 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class BookingRepositoryTest {
 
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
-    User user;
-    Booking booking;
-    Item item;
+    private User user;
+    private Booking booking;
+    private Item item;
 
     @BeforeEach
     void beforeEach() {

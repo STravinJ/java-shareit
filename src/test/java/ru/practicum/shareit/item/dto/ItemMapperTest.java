@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ItemMapperTest {
 
-    User user;
-    ItemRequest itemRequest;
-    Item item;
+    private User user;
+    private ItemRequest itemRequest;
+    private Item item;
 
     @BeforeEach
     void beforeEach() {
