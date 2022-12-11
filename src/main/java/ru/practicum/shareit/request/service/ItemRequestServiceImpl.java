@@ -12,6 +12,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.validation.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestOutDto add(long userId, ItemRequestInDto requestInDto) {
         User requester = checkUser(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(requestInDto, requester);
+        Validator.itemRequestValidation(itemRequest);
         return ItemRequestMapper.toItemRequestOutDto(itemRequestRepository.save(itemRequest), new ArrayList<>());
     }
 

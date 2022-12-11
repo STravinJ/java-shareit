@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,39 +13,42 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByBookerIdOrderByStartDesc(long userId);
+    List<Booking> findAllByBookerIdOrderByStartDesc(long userId, Pageable pageRequest);
 
     List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long userId,
                                                                                  LocalDateTime nowStart,
-                                                                                 LocalDateTime nowEnd);
+                                                                                 LocalDateTime nowEnd,
+                                                                                 Pageable pageRequest);
 
-    List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long userId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long userId, LocalDateTime now, Pageable pageRequest);
 
     List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(long userId,
-                                                                   LocalDateTime now);
+                                                                   LocalDateTime now,
+                                                                   Pageable pageRequest);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long userId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long userId, BookingStatus status, Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 order by b.start desc")
-    List<Booking> findAllByItemsOwnerId(long userId);
+    List<Booking> findAllByItemsOwnerId(long userId, Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.start <= ?2 and b.end >= ?3 order by b.start desc")
     List<Booking> findAllCurrentByItemsOwnerId(long userId,
                                                LocalDateTime nowStart,
-                                               LocalDateTime nowEnd);
+                                               LocalDateTime nowEnd,
+                                               Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.end <= ?2 order by b.start desc")
-    List<Booking> findAllPastByItemsOwnerId(long userId, LocalDateTime now);
+    List<Booking> findAllPastByItemsOwnerId(long userId, LocalDateTime now, Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.start >= ?2 order by b.start desc")
-    List<Booking> findAllFutureByItemsOwnerId(long userId, LocalDateTime now);
+    List<Booking> findAllFutureByItemsOwnerId(long userId, LocalDateTime now, Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and " +
             "b.status = ?2 order by b.start desc")
-    List<Booking> findAllStatusByItemsOwnerId(long userId, BookingStatus status);
+    List<Booking> findAllStatusByItemsOwnerId(long userId, BookingStatus status, Pageable pageRequest);
 
     @Query("select b from Booking b where b.item.id = ?1")
     List<Booking> findAllByItemsId(long itemId);

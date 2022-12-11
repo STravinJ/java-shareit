@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 
@@ -13,8 +14,8 @@ public interface BookingService {
 
     BookingResponseDto getById(long userId, long bookingId);
 
-    List<BookingResponseDto> getByUser(long userId, String state);
+    List<BookingResponseDto> getByUser(long userId, String state, Pageable pageRequest);
 
-    List<BookingResponseDto> getByOwner(long ownerId, String state);
+    List<BookingResponseDto> getByOwner(long ownerId, String state, Pageable pageRequest);
 
 }
