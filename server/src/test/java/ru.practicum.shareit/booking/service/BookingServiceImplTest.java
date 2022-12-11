@@ -73,19 +73,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addWhenEndIsBeforeStart() {
-
-        booking.setEnd(booking.getStart().minusDays(10));
-        BookingRequestDto bookingRequestDto = new BookingRequestDto(item.getId(), booking.getStart(),
-                booking.getEnd());
-        EndBeforeStartException exception = assertThrows(
-                EndBeforeStartException.class,
-                () -> bookingService.add(user.getId(), bookingRequestDto));
-
-        assertEquals("Дата окончания не может быть раньше даты старта!", exception.getMessage());
-    }
-
-    @Test
     void addBookingWithWrongItemId() {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
@@ -116,16 +103,16 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addWhenEndIsBeforeToday() {
+    void addWhenEndIsBeforeStart() {
 
-        booking.setEnd(booking.getEnd().minusDays(100));
+        booking.setEnd(booking.getStart().minusDays(10));
         BookingRequestDto bookingRequestDto = new BookingRequestDto(item.getId(), booking.getStart(),
                 booking.getEnd());
-        EndBeforeTodayException exception = assertThrows(
-                EndBeforeTodayException.class,
+        EndBeforeStartException exception = assertThrows(
+                EndBeforeStartException.class,
                 () -> bookingService.add(user.getId(), bookingRequestDto));
 
-        assertEquals("Дата окончания не может быть раньше текущей даты!", exception.getMessage());
+        assertEquals("Дата окончания не может быть раньше даты старта!", exception.getMessage());
     }
 
     @Test

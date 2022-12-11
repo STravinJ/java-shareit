@@ -184,14 +184,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkBookingDate(BookingRequestDto bookingRequestDto) {
+        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
+            throw new EndBeforeStartException();
+        }
         if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new EndBeforeTodayException();
         }
         if (bookingRequestDto.getStart().isBefore(LocalDateTime.now())) {
             throw new StartBeforeTodayException();
-        }
-        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new EndBeforeStartException();
         }
     }
 
