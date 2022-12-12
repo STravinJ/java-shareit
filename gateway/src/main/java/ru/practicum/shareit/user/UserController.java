@@ -30,14 +30,15 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<Object>  add(@Validated({Create.class}) @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> add(@Validated({Create.class}) @RequestBody UserDto userDto) {
         log.info("Добавление нового пользователя {}", userDto);
         return userClient.add(userDto);
     }
 
     @PatchMapping("{userId}")
-    public ResponseEntity<Object>  update(@PathVariable long userId,
-                          @Validated({Update.class}) @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> update(@PathVariable long userId,
+                                         @Validated({Update.class})
+                                         @RequestBody UserDto userDto) {
         userDto.setId(userId);
         log.info("Обновление пользователя id = {}, {}", userId, userDto);
         return userClient.update(userId, userDto);
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object>  getById(@PathVariable long userId) {
+    public ResponseEntity<Object> getById(@PathVariable long userId) {
         return userClient.getById(userId);
     }
 }
